@@ -1,33 +1,30 @@
 <?php
-
-// app/Http/Controllers/AuthController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        // Validate and create a new user
-    }
-
     public function login(Request $request)
     {
-        // Validate and log in the user
+        $credentials = $request->only('email', 'password');
+        if (!$token = Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json(['token' => $token]);
+    }
+
+    public function register(Request $request)
+    {
+        $user = User::create($request->all());
+        return response()->json(['user' => $user]);
     }
 
     public function logout()
     {
-        // Log out the user
-    }
-
-    public function updateProfile(Request $request)
-    {
-        // Update user profile
+        Auth::logout();
+        return response()->json(['message' => 'Successfully logged out']);
     }
 }
